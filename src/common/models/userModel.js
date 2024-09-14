@@ -1,6 +1,7 @@
+// userModel.js
 import { DataTypes } from "sequelize";
-import sequelize from "../config/database.js"; // Your Sequelize instance
-import Role from "./roleModel.js"; // Import Role model
+import db from "../config/database.js";
+const { sequelize } = db;
 
 const User = sequelize.define("User", {
   id: {
@@ -27,20 +28,10 @@ const User = sequelize.define("User", {
     allowNull: false,
     unique: true,
   },
-  role_id: {
-    type: DataTypes.INTEGER,
+  role: {
+    type: DataTypes.ENUM("user", "admin"),
     allowNull: false,
-    references: {
-      model: Role, // Foreign key reference to Role
-      key: "id",
-    },
   },
-});
-
-//relationship
-User.belongsTo(Role, {
-  foreignKey: "role_id",
-  as: "role",
 });
 
 export default User;

@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../config/database.js"; // Your Sequelize instance
+import database from "../config/database.js";
+const { sequelize } = database;
 
 const Category = sequelize.define("Category", {
   id: {
@@ -15,12 +16,6 @@ const Category = sequelize.define("Category", {
   description: {
     type: DataTypes.TEXT,
   },
-});
-
-//relationship
-Category.hasMany(Product, {
-  foreignKey: "category_id",
-  as: "products",
 });
 
 export default Category;

@@ -33,6 +33,13 @@ class BadRequestError extends Error {
       this.name = "TooManyRequestsError";
     }
   }
+
+  class InternalServerError extends Error {
+    constructor(message) {
+      super(message);
+      this.name = "InternalServerError";
+    }
+  }
   
-  export { BadRequestError, UnauthorizedError, NotFoundError, ConflictError, TooManyRequestsError };
+  export { BadRequestError, UnauthorizedError, NotFoundError, ConflictError, TooManyRequestsError, InternalServerError };
   

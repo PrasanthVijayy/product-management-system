@@ -1,3 +1,4 @@
+// config/database.js
 import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
 
@@ -14,26 +15,25 @@ const sequelize = new Sequelize(
     pool: {
       max: 5,
       min: 0,
-      acquire: 30000, //Max waiting time for connection pool
+      acquire: 30000,
       idle: 10000,
     },
   }
 );
 
-//Establish a connection to the database
-const connectDB = () => {
-  return new Promise((resolve, reject) => {
-    sequelize
-      .authenticate()
-      .then(() => {
-        console.log("Connected to databasesuccessfully.");
-        resolve();
-      })
-      .catch((err) => {
-        console.error("Unable to connect to the database:", err);
-        reject();
-      });
-  });
+const connectDB = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Connected to database successfully.");
+  } catch (err) {
+    console.error("Unable to connect to the database:", err);
+    throw err; // Re-throw to be handled by the caller
+  }
 };
 
-export default connectDB;
+const db = {
+  sequelize,
+  connectDB,
+};
+
+export default db;

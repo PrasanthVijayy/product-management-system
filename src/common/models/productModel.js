@@ -1,6 +1,7 @@
+// productModel.js
 import { DataTypes } from "sequelize";
-import sequelize from "../config/database.js";
-import Category from "./categoryModel.js";
+import db from "../config/database.js";
+const { sequelize } = db;
 
 const Product = sequelize.define("Product", {
   product_id: {
@@ -27,17 +28,11 @@ const Product = sequelize.define("Product", {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: Category,
+      model: 'Categories', // Ensure this matches the model name in the DB
       key: "id",
     },
-    onDelete: "cascade", // delete related products when category is deleted
+    onDelete: "cascade",
   },
-});
-
-//relationship
-Product.belongsTo(Category, {
-  foreignKey: "category_id",
-  as: "category",
 });
 
 export default Product;
