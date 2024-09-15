@@ -17,6 +17,7 @@ import userRoutes from "./restAPI/routes/authRoutes.js";
 import productRoutes from "./restAPI/routes/productRoutes.js";
 import categoryRoutes from "./restAPI/routes/categoryRoutes.js";
 import "./common/models/index.js";
+import { connectRedis } from "./common/config/redisClient.js";
 
 dotenv.config();
 const app = express();
@@ -73,23 +74,25 @@ categoryRoutes(app);
 /* ERROR HANDLERS */
 app.use(errorHandling);
 
-// Start server after database connection established
-db.connectDB()
-  .then(async () => {
-    // Synchronize models
-    try {
-      await db.sequelize.sync({ alter: false });
-      console.log("Models synchronized successfully.");
-    } catch (err) {
-      console.error("Error synchronizing the models:", err);
-    }
+const startServer = async () => {
+  try {
+    // Connect to Redis
+    await connectRedis();
 
+    // Connect to database and synchronize models
+    await db.connectDB();
+    await db.sequelize.sync({ alter: false });
+    console.log("Models synchronized successfully.");
+
+    // Start the Express server
     const server = app.listen(process.env.PORT || 3001, () => {
       console.log("Listening on port " + server.address().port);
     });
-  })
-  .catch((err) => {
-    console.log("DB connection failed, server initiation failed.", err);
-  });
+  } catch (err) {
+    console.error("Error during server startup:", err);
+  }
+};
+
+startServer();
 
 export default app;
