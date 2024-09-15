@@ -1,9 +1,8 @@
 // productModel.js
 import { DataTypes } from "sequelize";
 import db from "../config/database.js";
-const { sequelize } = db;
 
-const Product = sequelize.define("Product", {
+const Product = db.sequelize.define("Product", {
   product_id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -12,9 +11,6 @@ const Product = sequelize.define("Product", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
-  },
-  description: {
-    type: DataTypes.TEXT,
   },
   price: {
     type: DataTypes.DECIMAL(10, 2),
@@ -26,12 +22,20 @@ const Product = sequelize.define("Product", {
   },
   category_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
     references: {
-      model: 'Categories', // Ensure this matches the model name in the DB
+      model: 'Categories',
       key: "id",
     },
-    onDelete: "cascade",
+    onDelete: "SET NULL", // Set null if category is deleted id is set to null.
+    onUpdate: "CASCADE",
+  },
+  status:{
+    type: DataTypes.ENUM('inStock', 'outStock'),
+    defaultValue: 'inStock'
+  },
+  createdBy: {
+    type: DataTypes.STRING,
+    allowNull: false,
   },
 });
 

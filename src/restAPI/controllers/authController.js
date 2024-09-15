@@ -1,5 +1,5 @@
 import UserService from "../services/authService.js";
-import { BadRequestError, ConflictError } from "../../common/utils/error.js";
+import { BadRequestError } from "../../common/utils/error.js";
 import { v4 as uuidv4 } from "uuid";
 import constants from "../../common/utils/constants.js";
 

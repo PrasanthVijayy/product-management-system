@@ -1,10 +1,11 @@
 //API Rate Limiter to stop BRUTE FORCE ATTACKS.
 
 import rateLimit from "express-rate-limit";
+import { TooManyRequestsError } from "../../common/utils/error.js";
 
 const apiLimiter = (n) => {
   return rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes window
+    windowMs: 15 * 60 * 1000, // 15 minutes wiating window
     max: n,
     handler: () => {
       throw new TooManyRequestsError(

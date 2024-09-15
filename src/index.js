@@ -16,6 +16,7 @@ import errorHandling from "./common/middleware/errorMiddleware.js";
 import userRoutes from "./restAPI/routes/authRoutes.js";
 import productRoutes from "./restAPI/routes/productRoutes.js";
 import categoryRoutes from "./restAPI/routes/categoryRoutes.js";
+import "./common/models/index.js";
 
 dotenv.config();
 const app = express();
@@ -77,7 +78,7 @@ db.connectDB()
   .then(async () => {
     // Synchronize models
     try {
-      await db.sequelize.sync({ force: false });
+      await db.sequelize.sync({ alter: false });
       console.log("Models synchronized successfully.");
     } catch (err) {
       console.error("Error synchronizing the models:", err);
