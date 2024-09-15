@@ -9,7 +9,7 @@ class ProductController {
   createProduct = async (req, res, next) => {
     try {
       console.log("Controller - Product: createProduct - Started");
-      const { name, price, stock_quantity, category } = req.body;
+      const { name, price, stock_quantity, category, description } = req.body;
       const { uid } = req.user;
 
       let missingFields = [];

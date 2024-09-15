@@ -1,6 +1,7 @@
 import productRepo from "../repositories/productRepo.js";
 import categoryRepo from "../repositories/categoryRepo.js";
 import { NotFoundError, ConflictError } from "../../common/utils/error.js";
+import { redisClient } from "../../common/config/redisClient.js";
 
 class ProductService {
   constructor() {
@@ -37,6 +38,16 @@ class ProductService {
     try {
       console.log("Service - Product: getProducts - Started");
 
+      // Create a unique cache key based on filters
+      const cacheKey = `products:${JSON.stringify(filters)}`;
+
+      // Check if data is present in the cache
+      const cachedData = await redisClient.get(cacheKey);
+      if (cachedData) {
+        console.log("Service - Product: getProducts - Cache hit");
+        return JSON.parse(cachedData);
+      }
+      // Fetch data from the database if not in cache
       const products = await this.productRepo.getProducts(filters);
 
       // Format the response
@@ -44,14 +55,20 @@ class ProductService {
         return {
           product_id: product.product_id,
           name: product.name,
+          description: product.description || null,
           price: product.price,
           stock_quantity: product.stock_quantity,
           category_id: product.category_id,
-          category: product.category ? product.category.name : null, // Extract category name
+          category: product.category ? product.category.name : null,
           status: product.status,
           createdBy: product.createdBy,
           createdAt: product.createdAt,
         };
+      });
+
+      // Cache the formatted data
+      await redisClient.set(cacheKey, JSON.stringify(formattedProducts), {
+        EX: 3600, // Time to live (1 hour)
       });
 
       return formattedProducts;
@@ -65,9 +82,19 @@ class ProductService {
     try {
       console.log("Service - Product: getProductById - Started");
 
+      // Use the cache key based on the product ID
+      const cacheKey = `product:${id}`;
+
+      // Check if the product is cached
+      const cachedProduct = await redisClient.get(cacheKey);
+      if (cachedProduct) {
+        console.log("Service - Product: getProductById - Cache hit");
+        return JSON.parse(cachedProduct);
+      }
+
+      // Fetch product from the database
       const product = await this.productRepo.getProductById(id);
 
-      // Check if the product exists
       if (!product) {
         throw new NotFoundError(`Invalid product ID.`);
       }
@@ -75,14 +102,20 @@ class ProductService {
       const formattedProduct = {
         product_id: product.product_id,
         name: product.name,
+        description: product.description || null,
         price: product.price,
         stock_quantity: product.stock_quantity,
         category_id: product.category_id,
-        category: product.category ? product.category.name : null, // Extract category name
+        category: product.category ? product.category.name : null,
         status: product.status,
         createdBy: product.createdBy,
         createdAt: product.createdAt,
       };
+
+      // Cache the product for future requests
+      await redisClient.set(cacheKey, JSON.stringify(formattedProduct), {
+        EX: 3600, // Time to live (1 hour)
+      });
 
       return formattedProduct;
     } catch (error) {
