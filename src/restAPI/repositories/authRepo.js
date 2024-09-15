@@ -6,7 +6,6 @@ class UserRepo  {
       console.log("Repository - Auth: checkUser - Initiated");
       let whereCondition = {};
       whereCondition[field] = value;
-      console.log("whereCondition", whereCondition);
 
       const user = await User.findOne({ where: whereCondition });
       return user

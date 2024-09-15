@@ -1,8 +1,7 @@
 import { DataTypes } from "sequelize";
-import database from "../config/database.js";
-const { sequelize } = database;
+import db from "../config/database.js";
 
-const Category = sequelize.define("Category", {
+const Category = db.sequelize.define("Category", {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -11,10 +10,11 @@ const Category = sequelize.define("Category", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
+    unique: true, // Category will be unique.
   },
-  description: {
-    type: DataTypes.TEXT,
+  createdBy: {
+    type: DataTypes.UUID,
+    allowNull: false,
   },
 });
 

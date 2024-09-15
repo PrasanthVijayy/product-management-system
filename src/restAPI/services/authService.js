@@ -19,9 +19,7 @@ class UserService {
           "email",
           payload.email
         );
-        if (emailExist) {
-          throw new ConflictError("Email already exists");
-        }
+        if (emailExist) throw new ConflictError("Email already exists");
       }
 
       // Check if the username already exists
@@ -30,9 +28,7 @@ class UserService {
           "username",
           payload.username
         );
-        if (userExist) {
-          throw new ConflictError("Username already exists");
-        }
+        if (userExist) throw new ConflictError("Username already exists");
       }
 
       if (payload.password) {

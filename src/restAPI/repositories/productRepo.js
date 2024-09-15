@@ -1,123 +1,124 @@
-import Products from "../../common/models/productModel.js";
+import { Product, Category } from "../../common/models/index.js";
+import { Op } from "sequelize";
 
-module.exports = {
-  checkExistance: async (payload) => {
+class ProductRepo {
+  async createProduct(payload) {
     try {
-      console.log("Repository - Product: checkExistance - Initiated");
-      return new Promise((resolve, reject) => {
-        Products.findOne(payload, (err, data) => {
-          if (err) {
-            console.log("Repository - Product: checkExistance - Error");
-            reject(err);
-          } else {
-            console.log("Repository - Product: checkExistance - Ended");
-            resolve(data);
-          }
-        });
-      });
-    } catch {
-      console.log("Repository - Product: checkExistance - Error");
-      throw new Error(error);
+      return await Product.create(payload);
+    } catch (error) {
+      throw error;
     }
-  },
+  }
 
-  createProduct: async (payload) => {
-    try {
-      console.log("Repository - Product: createProduct - Initiated");
-      return new Promise((resolve, reject) => {
-        Products.create(payload, (err, data) => {
-          if (err) {
-            console.log("Repository - Product: createProduct - Error");
-            reject(err);
-          } else {
-            console.log("Repository - Product: createProduct - Ended");
-            resolve(data);
-          }
-        });
-      });
-    } catch {
-      console.log("Repository - Product: createProduct - Error");
-      throw new Error(error);
-    }
-  },
+  //fetch categoryId from Category table
+  // async getCategoryByName(category_name) {
+  //   try {
+  //     console.log("Repository - Category: getCategoryByName - Initiated");
+  //     const category = await Category.findOne({
+  //       where: { name: category_name },
+  //     });
 
-  getProducts: async (payload) => {
-    try {
-      console.log("Repository - Product: getProducts - Initiated");
-      return new Promise((resolve, reject) => {
-        Products.find(payload, (err, data) => {
-          if (err) {
-            console.log("Repository - Product: getProducts - Error");
-            reject(err);
-          } else {
-            console.log("Repository - Product: getProducts - Ended");
-            resolve(data);
-          }
-        });
-      });
-    } catch {
-      console.log("Repository - Product: getProducts - Error");
-      throw new Error(error);
-    }
-  },
+  //     return category; // Returns null if not found
+  //   } catch (error) {
+  //     console.log("Repository - Category: getCategoryByName - Error");
+  //     throw error;
+  //   }
+  // }
 
-  getProduct: async (payload) => {
+  async getProducts(filters) {
     try {
-      console.log("Repository - Product: getProduct - Initiated");
-      return new Promise((resolve, reject) => {
-        Products.findOne(payload, (err, data) => {
-          if (err) {
-            console.log("Repository - Product: getProduct - Error");
-            reject(err);
-          } else {
-            console.log("Repository - Product: getProduct - Ended");
-            resolve(data);
-          }
-        });
-      });
-    } catch {
-      console.log("Repository - Product: getProduct - Error");
-      throw new Error(error);
-    }
-  },
+      console.log("Repository - Product: getProducts - Started");
 
-  updateProduct: async (payload) => {
-    try {
-      console.log("Repository - Product: updateProduct - Initiated");
-      return new Promise((resolve, reject) => {
-        Products.findOneAndUpdate(payload, (err, data) => {
-          if (err) {
-            console.log("Repository - Product: updateProduct - Error");
-            reject(err);
-          } else {
-            console.log("Repository - Product: updateProduct - Ended");
-            resolve(data);
-          }
-        });
-      });
-    } catch {
-      console.log("Repository - Product: updateProduct - Error");
-      throw new Error(error);
-    }
-  },
+      const {
+        categoryId,
+        category, // For filtering by category name
+        sortBy,
+        sortOrder = "ASC", // Default value directly in destructuring
+        status,
+        name, // Add name filter
+        page = 1,
+        pageSize = 10,
+      } = filters;
 
-  deleteProduct: async (payload) => {
-    try {
-      console.log("Repository - Product: deleteProduct - Initiated");
-      return new Promise((resolve, reject) => {
-        Products.findOneAndDelete(payload, (err, data) => {
-          if (err) {
-            console.log("Repository - Product: deleteProduct - Error");
-            reject(err);
-          } else {
-            console.log("Repository - Product: deleteProduct - Ended");
-            resolve(data);
-          }
-        });
+      const where = {};
+      if (categoryId) where.category_id = categoryId;
+      if (status) where.status = status;
+      if (name) where.name = { [Op.iLike]: `%${name}%` }; // Use `Op.iLike` for case-insensitive search
+
+      // Handle category name filtering
+      const includeCategory = {};
+      if (category) {
+        includeCategory.where = { name: { [Op.iLike]: `%${category}%` } }; // Use `Op.iLike` for case-insensitive search
+      }
+
+      const order = [];
+      if (sortBy) {
+        // Use sortOrder directly
+        order.push([sortBy, sortOrder]);
+      }
+
+      const products = await Product.findAll({
+        where,
+        order,
+        limit: pageSize,
+        offset: (page - 1) * pageSize,
+        include: [
+          {
+            model: Category,
+            as: "category", // Ensure this matches the alias in the association
+            attributes: ["name"],
+            where: includeCategory.where, // Apply category filter here
+          },
+        ],
       });
-    } catch {
-      console.log("Repository - Product: deleteProduct - Error");
-      throw new Error(error);
+
+      return products;
+    } catch (error) {
+      console.log("Repository - Product: getProducts - Error:", error);
+      throw error;
     }
-  },
-};
+  }
+
+  async getProductById(id) {
+    try {
+      console.log("Repository - Product: getProductById - Started");
+      return await Product.findByPk(id, {
+        include: [
+          {
+            model: Category,
+            as: "category", // Ensure this matches the alias in associations
+            attributes: ["name"], // Specify the attributes you want to include
+          },
+        ],
+      });
+    } catch (error) {
+      console.log("Repository - Product: getProductById - Error:", error);
+      throw error;
+    }
+  }
+
+  async updateProduct(id, payload) {
+    try {
+      console.log("Repository - Product: updateProduct - Started");
+      return await Product.update(payload, { where: { product_id: id } });
+    } catch (error) {
+      console.log("Repository - Product: updateProduct - Error:", error);
+      throw error;
+    }
+  }
+
+  async deleteProduct(id) {
+    try {
+      console.log("Repository - Product: deleteProduct - Started");
+      const product = await Product.findByPk(id);
+      if (!product) return null;
+      await product.destroy();
+      return true;
+    } catch (error) {
+      console.log("Repository - Product: deleteProduct - Error:", error);
+      throw error;
+    }
+  }
+}
+
+export default ProductRepo;

@@ -2,63 +2,83 @@ import jwt from "jsonwebtoken";
 import {
   UnauthorizedError,
   InternalServerError,
-} from "./errorMiddleware.js";
+  NotFoundError,
+} from "../utils/error.js";
+import User from "../../common/models/userModel.js"; // Ensure this is imported correctly
+import constants from "../../common/utils/constants.js"; // Ensure this is imported correctly
 
 const authMiddleware = async (req, res, next) => {
   try {
-    const accessToken = req.cookies.accessToken;
-    const refreshToken = req.cookies.refreshToken;
+    // Extract token from cookies
+    const token = req.cookies.access_token;
 
-    if (!accessToken) {
-      return next(new UnauthorizedError("No access token provided"));
+    if (!token) {
+      throw new UnauthorizedError("No token provided");
     }
 
     // Verify the access token
-    jwt.verify(accessToken, process.env.SECRET_KEY, async (err, decoded) => {
-      if (err && err.name === "TokenExpiredError") {
-        // Access token expired, check the refresh token
-        if (!refreshToken) {
-          return next(new UnauthorizedError("No refresh token provided"));
+    jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
+      if (err) {
+        if (err.name === "TokenExpiredError") {
+          const refreshToken = req.cookies.refresh_token;
+          if (!refreshToken) {
+            throw new UnauthorizedError("No refresh token provided");
+          }
+
+          try {
+            const decodedRefreshToken = jwt.verify(
+              refreshToken,
+              process.env.REFRESH_TOKEN_SECRET
+            );
+
+            const newAccessToken = jwt.sign(
+              { uid: decodedRefreshToken.uid, role: decodedRefreshToken.role },
+              process.env.SECRET_KEY,
+              { expiresIn: constants.TOKENS.ACCESS_TOKEN_EXPIRY }
+            );
+
+            res.cookie("access_token", newAccessToken, {
+              httpOnly: true,
+              secure: process.env.NODE_ENV === "production",
+            });
+
+            // Overwrite decoded with the refresh token payload
+            decoded = decodedRefreshToken;
+          } catch (refreshTokenError) {
+            throw new UnauthorizedError(
+              "Unauthorized: Refresh token invalid or expired"
+            );
+          }
+        } else {
+          throw new UnauthorizedError("Unauthorized: Invalid token");
         }
-
-        try {
-          // Verify the refresh token
-          const decodedRefreshToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-
-          // Issue a new access token
-          const newAccessToken = jwt.sign(
-            { uid: decodedRefreshToken.uid },
-            process.env.SECRET_KEY,
-            { expiresIn: "15m" }
-          );
-
-          // Set the new access token in the cookie
-          res.cookie("accessToken", newAccessToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "Strict",
-            maxAge: 15 * 60 * 1000, // 15 minutes
-          });
-
-          // Attach the user to the request
-          req.user = decodedRefreshToken;
-
-          return next();
-        } catch (refreshTokenError) {
-          return next(new UnauthorizedError("Invalid refresh token"));
-        }
-      } else if (err) {
-        // Handle other access token errors
-        return next(new UnauthorizedError("Invalid access token"));
       }
 
-      // Access token is valid, attach user to the request
+      const { uid, role } = decoded;
+
+      const userData = await User.findOne({
+        where: { uid },
+      });
+
+      if (!userData) {
+        throw new NotFoundError("User not found");
+      }
+
       req.user = decoded;
+      req.userData = userData;
+
       next();
     });
   } catch (error) {
     console.error("Middleware error:", error);
-    next(new InternalServerError("An unexpected error occurred"));
+
+    if (error instanceof UnauthorizedError) {
+      return res.status(401).json({ message: error.message });
+    } else if (error instanceof NotFoundError) {
+      return res.status(404).json({ message: error.message });
+    } else {
+      return res.status(500).json({ message: "Internal server error" });
+    }
   }
 };
 
