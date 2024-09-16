@@ -9,6 +9,19 @@ class ProductService {
     this.categoryRepo = new categoryRepo();
   }
 
+  async checkExistance(field, value) {
+    try {
+      console.log("Service - Product: checkExistance - Started");
+      let whereCondition = {};
+      whereCondition[field] = value;
+      const product = await this.productRepo.checkExistance(field, value);
+      return product;
+    } catch (error) {
+      console.log("Service - Product: checkExistance - Error");
+      throw error;
+    }
+  }
+
   async getCategoryIdByName(category) {
     try {
       console.log("Service - Product: getCategoryIdByName - Started");
@@ -127,6 +140,7 @@ class ProductService {
   async updateProduct(id, payload) {
     try {
       console.log("Service - Product: updateProduct - Started");
+
       if (payload.category) {
         const category = await this.categoryRepo.checkExistance(
           "name",
@@ -136,7 +150,11 @@ class ProductService {
         payload.category_id = category.id;
       }
 
-      return await this.productRepo.updateProduct(id, payload);
+      const affectedRows = await this.productRepo.updateProduct(id, payload);
+
+      if (affectedRows === 0) throw new NotFoundError("Invalid product ID.");
+
+      return affectedRows;
     } catch (error) {
       console.log("Service - Product: updateProduct - Error:", error);
       throw error;
@@ -148,7 +166,7 @@ class ProductService {
       console.log("Service - Product: deleteProduct - Started");
       const productExist = await this.productRepo.deleteProduct(id);
 
-      if (!productExist) throw new NotFoundError("Invalid product ID.");
+      if (!productExist) throw new NotFoundError("Product ID not found");
       return productExist;
     } catch (error) {
       console.log("Service - Product: deleteProduct - Error:", error);

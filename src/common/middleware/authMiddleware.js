@@ -71,14 +71,7 @@ const authMiddleware = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Middleware error:", error);
-
-    if (error instanceof UnauthorizedError) {
-      return res.status(401).json({ message: error.message });
-    } else if (error instanceof NotFoundError) {
-      return res.status(404).json({ message: error.message });
-    } else {
-      return res.status(500).json({ message: "Internal server error" });
-    }
+    next(error);
   }
 };
 

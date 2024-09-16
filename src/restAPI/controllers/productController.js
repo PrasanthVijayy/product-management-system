@@ -111,8 +111,13 @@ class ProductController {
   deleteProduct = async (req, res, next) => {
     try {
       const { id } = req.params;
-      await this.productService.deleteProduct(id);
-      res.status(200).json({ message: "Product deleted successfully" });
+      const productExist = await this.productService.checkExistance(
+        "product_id",
+        id
+      );
+      if (!productExist) throw new NotFoundError("Product ID not found");
+      const result = await this.productService.deleteProduct(id);
+      res.status(200).json({ message: "Product deleted successfully", result });
     } catch (error) {
       next(error);
     }

@@ -39,7 +39,7 @@ class UserService {
       return user;
     } catch (error) {
       console.log("Service - Auth: register - Error");
-      throw error; // Remove the `new Error(error)` to prevent double-wrapping the error
+      throw error;
     }
   }
 
