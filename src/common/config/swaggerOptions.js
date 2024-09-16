@@ -1,5 +1,8 @@
-// src/common/config/swaggerOptions.js
 import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const options = {
   definition: {
@@ -11,16 +14,14 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000", // Adjust according to your environment
+        url: `http://localhost:${process.env.PORT || 3001}`,
+        description: "Local server",
       },
     ],
   },
-  apis: [
-    "./src/restAPI/routes/*.js", // Path to your API route files
-    "./src/common/models/*.js",
-  ],
+  apis: ["./src/restAPI/routes/*.js", "./src/common/models/*.js"],
 };
 
 const swaggerDocs = swaggerJsdoc(options);
 
-export { swaggerDocs };
+export { swaggerUi, swaggerDocs };

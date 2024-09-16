@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  app:
+    image: my-app-image
+    container_name: my_app_container
+    restart: always
+    environment:
+      - PORT=${PORT}
+      - DB_HOST=db
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - SECRET_KEY=${SECRET_KEY}
+      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
+      - REDIS_URL=${REDIS_URL}
+      - ALLOWED_ORIGIN=${ALLOWED_ORIGIN}
+      - ALLOWED_METHODS=${ALLOWED_METHODS}
+      - ALLOWED_HEADERS=${ALLOWED_HEADERS}
+      - ALLOWED_CREDENTIALS=${ALLOWED_CREDENTIALS}
+      - NODE_ENV=${NODE_ENV}
+    ports:
+      - "4001:4001" 
+    depends_on:
+      - db
+      - redis
+    networks:
+      - my_network
+
+  db:
+    image: mysql:8
+    container_name: my_db_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - my_network
+
+  redis:
+    image: redis:latest
+    container_name: my_redis_container
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
+
+volumes:
+  db_data:
+    driver: local

@@ -44,17 +44,17 @@ app.use(
 );
 
 // /* CORN JOB - SERVER TIMESTAMP TRACKER */
-// corn.schedule("*/15 * * * *", () => {
-//   console.log(
-//     "Server timestamp: ",
-//     new Date(),
-//     " Minutes:  ",
-//     new Date().getMinutes()
-//   );
-// });
+corn.schedule("*/15 * * * *", () => {
+  console.log(
+    "Server timestamp: ",
+    new Date(),
+    " Minutes:  ",
+    new Date().getMinutes()
+  );
+});
 
 // Swagger setup
-// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 /* ROUTES HANDLERS */
 userRoutes(app);
@@ -87,6 +87,7 @@ const startServer = async () => {
     // Start the Express server
     const server = app.listen(process.env.PORT || 3001, () => {
       console.log("Listening on port " + server.address().port);
+      console.log ("apiDocumentation link - ", "http://localhost:" + server.address().port+"/api-docs");
     });
   } catch (err) {
     console.error("Error during server startup:", err);
