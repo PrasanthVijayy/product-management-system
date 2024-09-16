@@ -62,6 +62,11 @@ The Product Management System (PMS) is a REST API designed for managing products
 
    This will run all unit and integration tests defined in the `test` directory using Jest.
 
+2. **Test Status**:
+    To view the test status and results in a more readable format, an HTML report is generated after test execution. You can open the generated HTML file to see a detailed view of the test results.
+   The HTML report is usually located in the `test/reports.html` file, and you can open it with any web browser.
+   
+
 ## API Documentation
 
 - **API Documentation**: The API documentation is available at [http://localhost:4001/api-docs](http://localhost:4001/api-docs). This link provides detailed information about the API endpoints, request parameters, and response formats.
