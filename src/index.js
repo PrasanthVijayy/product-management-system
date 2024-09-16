@@ -43,15 +43,15 @@ app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms")
 );
 
-/* CORN JOB - SERVER TIMESTAMP TRACKER */
-corn.schedule("*/15 * * * *", () => {
-  console.log(
-    "Server timestamp: ",
-    new Date(),
-    " Minutes:  ",
-    new Date().getMinutes()
-  );
-});
+// /* CORN JOB - SERVER TIMESTAMP TRACKER */
+// corn.schedule("*/15 * * * *", () => {
+//   console.log(
+//     "Server timestamp: ",
+//     new Date(),
+//     " Minutes:  ",
+//     new Date().getMinutes()
+//   );
+// });
 
 // Swagger setup
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));

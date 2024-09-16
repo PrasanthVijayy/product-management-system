@@ -56,7 +56,7 @@ class UserController {
     }
   };
 
-  // Login response
+  // Login user
   login = async (req, res, next) => {
     try {
       console.log("Controller - Auth: login - Started");
@@ -66,21 +66,16 @@ class UserController {
       if (!password) throw new BadRequestError("Missing password field");
 
       const payload = { email, password };
-
-      // Payload passed to service layer
+      console.log("payload", payload);
       const user = await this.userService.login(payload);
 
       console.log("Controller - Auth: login - Ended");
-
-      // Set token as an HTTP-only cookie
       res.cookie("access_token", user.access_token, {
         httpOnly: true, // Prevent JavaScript access
         secure: process.env.NODE_ENV === "PRODUCTION", // Use 'true' if you have HTTPS
         sameSite: "Strict", // Adjust as needed
         maxAge: constants.TOKENS.ACCESS_TOKEN_EXPIRY * 1000, // Token expiration in milliseconds
       });
-
-      // Return success with user data
       res.status(200).json({ message: "Login successful", user });
     } catch (error) {
       console.log("Controller - Auth: login - Error");

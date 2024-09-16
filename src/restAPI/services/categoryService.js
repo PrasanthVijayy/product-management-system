@@ -1,10 +1,11 @@
 import categoryRepo from "../repositories/categoryRepo.js";
 import { ConflictError, NotFoundError } from "../../common/utils/error.js";
 
-class userService {
+class categoryService {
   constructor() {
     this.categoryRepo = new categoryRepo();
   }
+
   async createCategory(payload) {
     try {
       console.log("Service - Category: createCategory - Initiated");
@@ -16,40 +17,45 @@ class userService {
         );
         if (categoryExist) throw new ConflictError("Category already exists");
       }
-
+      console.log("Service - Category: createCategory - Success");
       return await this.categoryRepo.createCategory(payload);
     } catch (error) {
       console.log("Service - Category: createCategory - Error");
-      throw error; // Just throw the original error
+      throw error;
     }
   }
 
-  async getCategories({ page, limit }) {
+  async getCategories({ page = 1, limit = 10 }) {
     try {
       console.log("Service - Category: getCategories - Initiated");
 
       const offset = (page - 1) * limit; // Calculate offset for pagination
 
-      // Pass parameters to the repository method
       const { categories, total } = await this.categoryRepo.getCategories({
         limit,
         offset,
       });
+      console.log("Service - Category: getCategories - Success");
 
       return { total, categories }; // Return both categories and total count
     } catch (error) {
       console.log("Service - Category: getCategories - Error");
-      throw error; // Propagate the error up
+      throw error;
     }
   }
 
-  async getCategoryById(payload) {
+  async getCategoryById(id) {
     try {
-      console.log("Service - Category: getCategory - Initiated");
-      return await this.categoryRepo.getCategoryById(payload);
+      console.log("Service - Category: getCategoryById - Initiated");
+      const category = await this.categoryRepo.getCategoryById(id);
+
+      if (!category) throw new NotFoundError("Category not found");
+
+      console.log("Service - Category: getCategoryById - Success");
+      return category;
     } catch (error) {
-      console.log("Service - Category: getCategory - Error");
-      throw new Error(error);
+      console.log("Service - Category: getCategoryById - Error");
+      throw error;
     }
   }
 
@@ -58,9 +64,9 @@ class userService {
       console.log("Service - Category: updateCategory - Initiated");
 
       const idExist = await this.categoryRepo.checkExistance("id", id);
-      console.log("idExist", idExist);
       if (!idExist) throw new NotFoundError("Invalid category ID");
 
+      console.log("Service - Category: updateCategory - Success");
       // Update the category
       return await this.categoryRepo.updateCategory(id, payload);
     } catch (error) {
@@ -69,16 +75,19 @@ class userService {
     }
   }
 
-
   async deleteCategory(id) {
     try {
       console.log("Service - Category: deleteCategory - Initiated");
-      return await this.categoryRepo.deleteCategory(id);
+      const category = await this.categoryRepo.deleteCategory(id);
+      if (!category) throw new NotFoundError("Category not found");
+
+      console.log("Service - Category: deleteCategory - Success");
+      return category;
     } catch (error) {
       console.log("Service - Category: deleteCategory - Error");
-      throw new Error(error);
+      throw error;
     }
   }
 }
 
-export default userService;
+export default categoryService;

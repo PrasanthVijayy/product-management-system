@@ -1,10 +1,24 @@
-export default {
-    setupFilesAfterEnv: ['./tests/jest.setup.js'],
-    testEnvironment: 'node', // or 'jsdom' depending on your needs
-    transform: {
-      '^.+\\.js$': 'babel-jest',
-    },
-    moduleFileExtensions: ['js', 'json', 'node'],
-    // Other configurations
-  };
-  
+module.exports = {
+  testEnvironment: "node",
+  setupFilesAfterEnv: ["<rootDir>/tests/jest.setup.js"],
+  testPathIgnorePatterns: ["/node_modules/", "/dist/"],
+  moduleDirectories: ["node_modules", "src"],
+  moduleNameMapper: {
+    "^src/(.*)$": "<rootDir>/src/$1",
+    "^tests/(.*)$": "<rootDir>/tests/$1",
+  },
+  coverageDirectory: "<rootDir>/coverage",
+  collectCoverageFrom: ["src/**/*.js", "!src/**/*.test.js", "!src/index.js"],
+  verbose: true,
+  reporters: [
+    "default",
+    [
+      "jest-html-reporter",
+      {
+        pageTitle: "Test Report",
+        outputPath: "./test-report.html",
+        includeFailureMsg: true,
+      },
+    ],
+  ],
+};

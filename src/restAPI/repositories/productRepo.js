@@ -1,29 +1,30 @@
 import { Product, Category } from "../../common/models/index.js";
 import { Op } from "sequelize";
+import { NotFoundError } from "../../common/utils/error.js";
 
 class ProductRepo {
-  async createProduct(payload) {
+
+  async checkExistance(field, value) {
     try {
-      return await Product.create(payload);
+      console.log("Repository - Product: checkExistance - Initiated");
+      const product = await Product.findOne({ where: { [field]: value } });
+      return product;
     } catch (error) {
+      console.log("Repository - Product: checkExistance - Error");
       throw error;
     }
   }
-
-  //fetch categoryId from Category table
-  // async getCategoryByName(category_name) {
-  //   try {
-  //     console.log("Repository - Category: getCategoryByName - Initiated");
-  //     const category = await Category.findOne({
-  //       where: { name: category_name },
-  //     });
-
-  //     return category; // Returns null if not found
-  //   } catch (error) {
-  //     console.log("Repository - Category: getCategoryByName - Error");
-  //     throw error;
-  //   }
-  // }
+  async createProduct(payload) {
+    try {
+      console.log("Repository - Product: create - Initiated");
+      const product = await Product.create(payload);
+      
+      return product;
+    } catch (error) {
+      console.log("Repository - Product: create - Error");
+      throw error;
+    }
+  }
 
   async getProducts(filters) {
     try {
@@ -33,7 +34,7 @@ class ProductRepo {
         categoryId,
         category, // For filtering by category name
         sortBy,
-        sortOrder = "ASC", // Default value directly in destructuring
+        sortOrder = "ASC",
         status,
         name, // Add name filter
         page = 1,
@@ -65,9 +66,9 @@ class ProductRepo {
         include: [
           {
             model: Category,
-            as: "category", // Ensure this matches the alias in the association
+            as: "category",
             attributes: ["name"],
-            where: includeCategory.where, // Apply category filter here
+            where: includeCategory.where,
           },
         ],
       });
@@ -86,8 +87,8 @@ class ProductRepo {
         include: [
           {
             model: Category,
-            as: "category", // Ensure this matches the alias in associations
-            attributes: ["name"], // Specify the attributes you want to include
+            as: "category",
+            attributes: ["name"],
           },
         ],
       });
@@ -100,7 +101,15 @@ class ProductRepo {
   async updateProduct(id, payload) {
     try {
       console.log("Repository - Product: updateProduct - Started");
-      return await Product.update(payload, { where: { product_id: id } });
+      const [affectedRows] = await Product.update(payload, {
+        where: { product_id: id },
+      });
+
+      if (affectedRows === 0) {
+        throw new NotFoundError("Invalid product ID.");
+      }
+
+      return affectedRows;
     } catch (error) {
       console.log("Repository - Product: updateProduct - Error:", error);
       throw error;
@@ -111,9 +120,9 @@ class ProductRepo {
     try {
       console.log("Repository - Product: deleteProduct - Started");
       const product = await Product.findByPk(id);
-      if (!product) return null;
+      if (!product) throw new NotFoundError("Product not found");
       await product.destroy();
-      return true;
+      return `Product deleted successfully`;
     } catch (error) {
       console.log("Repository - Product: deleteProduct - Error:", error);
       throw error;
