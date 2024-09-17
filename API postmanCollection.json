@@ -1,0 +1,433 @@
+{
+	"info": {
+		"_postman_id": "7992c3bc-79f8-49e2-9669-c5bbbafdfc06",
+		"name": "productInventory API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37560782"
+	},
+	"item": [
+		{
+			"name": "REST API",
+			"item": [
+				{
+					"name": "Products",
+					"item": [
+						{
+							"name": "Add product",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"AC\",\r\n    \"price\":\"10000\",\r\n    \"stock_quantity\":1,\r\n    \"category\":\"Home Appliances\",\r\n    \"description\":\"Good product\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{project}}/api/v1/product/create",
+									"host": [
+										"{{project}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"product",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List products",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{project}}/api/v1/product/list",
+									"host": [
+										"{{project}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"product",
+										"list"
+									],
+									"query": [
+										{
+											"key": "categoryId",
+											"value": "2",
+											"description": "Search by CategoryId",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": "outStock",
+											"disabled": true
+										},
+										{
+											"key": "sortBy",
+											"value": "createdAt",
+											"description": "Sorting by fields",
+											"disabled": true
+										},
+										{
+											"key": "sortOrder",
+											"value": "DESC",
+											"description": "OrderBy on field (SortBY)",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "2",
+											"description": "Page no",
+											"disabled": true
+										},
+										{
+											"key": "pageSize",
+											"value": "1",
+											"description": "Page limit",
+											"disabled": true
+										},
+										{
+											"key": "name",
+											"value": "AC",
+											"disabled": true
+										},
+										{
+											"key": "category",
+											"value": "Electronics",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List single product",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{project}}/api/v1/product/list/:id",
+									"host": [
+										"{{project}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"product",
+										"list",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update product",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\":\"outStock\",\r\n    \"category\":\"Home Appliances\",\r\n    \"stock_quantity\":30,\r\n    \"name\":\"prasanth\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{project}}/api/v1/product/update/:id",
+									"host": [
+										"{{project}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"product",
+										"update",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete product",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{project}}/api/v1/product/delete/:id",
+									"host": [
+										"{{project}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"product",
+										"delete",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "9000"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "### CRUD operations on products on below API.\n\n- Creating prodcuts\n    \n- Listing all products\n    \n- Listing single product\n    \n- Updating single product\n    \n- Deleting single product"
+				},
+				{
+					"name": "Categories",
+					"item": [
+						{
+							"name": "Create category",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    //Create category\r\n    \"name\":\"demo\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{project}}/api/v1/category/create",
+									"host": [
+										"{{project}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"category",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Category",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{project}}/api/v1/category/delete/:id",
+									"host": [
+										"{{project}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"category",
+										"delete",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Category",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"electronics\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{project}}/api/v1/category/update/:id",
+									"host": [
+										"{{project}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"category",
+										"update",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1",
+											"type": "string"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "list single category",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{project}}/api/v1/category/list/:id",
+									"host": [
+										"{{project}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"category",
+										"list",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Categories",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{project}}/api/v1/category/list?page=1&limit=0",
+									"host": [
+										"{{project}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"category",
+										"list"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "### CRUD operations on Categories on below API.\n\n- Creating categories\n    \n- Listing all categories\n    \n- Listing single categories\n    \n- Updating single categories\n    \n- Deleting single categories"
+				},
+				{
+					"name": "Authentication",
+					"item": [
+						{
+							"name": "User login",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"admin2@gmail.com\",\r\n    \"password\": \"Hello@123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{project}}/api/v1/user/login",
+									"host": [
+										"{{project}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"user",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register user",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"Hello@123\",\r\n    \"email\": \"admin@gmail.com\",\r\n    \"role\": \"user\"    \r\n\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{project}}/api/v1/user/register",
+									"host": [
+										"{{project}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"user",
+										"register"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "### REST API to handle authentication services for users."
+				}
+			],
+			"description": "### **REST API handling CRUD operations on inventory of products - categories.**"
+		}
+	]
+}
