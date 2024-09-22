@@ -19,6 +19,10 @@ import categoryRoutes from "./restAPI/routes/categoryRoutes.js";
 import "./common/models/index.js";
 import { connectRedis } from "./common/config/redisClient.js";
 
+/* GraphQL */
+import schema from "./graphQl/schema.js";
+import resolvers from "./graphQL/resolvers/index.js"; 
+
 dotenv.config();
 const app = express();
 
@@ -62,14 +66,14 @@ productRoutes(app);
 categoryRoutes(app);
 
 /* GRAPHQL HANDLERS */
-// app.use(
-//   "/graphql",
-//   createHandler({
-//     schema: schema,
-//     rootValue: resolvers,
-//     graphiql: true,
-//   })
-// );
+app.use(
+  "/graphql",
+  createHandler({
+    schema: schema,
+    rootValue: resolvers,
+    graphiql: true,
+  })
+);
 
 /* ERROR HANDLERS */
 app.use(errorHandling);
@@ -87,7 +91,10 @@ const startServer = async () => {
     // Start the Express server
     const server = app.listen(process.env.PORT || 3001, () => {
       console.log("Listening on port " + server.address().port);
-      console.log ("apiDocumentation link - ", "http://localhost:" + server.address().port+"/api-docs");
+      console.log(
+        "apiDocumentation link - ",
+        "http://localhost:" + server.address().port + "/api-docs"
+      );
     });
   } catch (err) {
     console.error("Error during server startup:", err);
