@@ -17,8 +17,21 @@ const resolvers = {
         const { username, email, password, role } = input;
 
         // Validate fields
-        if (!username || !email || !password || !role) {
-          throw new BadRequestError("Missing fields");
+        // if (!username || !email || !password || !role) {
+        //   throw new BadRequestError("Missing fields");
+        // }
+
+        let missingFields = [];
+
+        if (!username) missingFields.push("username");
+        if (!email) missingFields.push("email");
+        if (!password) missingFields.push("password");
+        if (!role) missingFields.push("role");
+
+        if (missingFields.length > 0) {
+          throw new BadRequestError(
+            `Missing fields: ${missingFields.join(", ")}`
+          );
         }
 
         if (!/^[a-zA-Z0-9]+$/.test(username)) {
@@ -44,21 +57,24 @@ const resolvers = {
         const user = await userService.register(payload);
 
         // Generate JWT token
-        const tokenPayload = {
-          uid: user.uid,
-          email: user.email,
-          tokenType: "access",
-        };
+        // const tokenPayload = {
+        //   uid: user.uid,
+        //   email: user.email,
+        //   tokenType: "access",
+        // };
 
-        const accessToken = jwt.sign(tokenPayload, process.env.SECRET_KEY, {
-          expiresIn: constants.TOKENS.ACCESS_TOKEN_EXPIRY,
-        });
+        // const accessToken = jwt.sign(tokenPayload, process.env.SECRET_KEY, {
+        //   expiresIn: constants.TOKENS.ACCESS_TOKEN_EXPIRY,
+        // });
 
         return {
-          uid: user.uid,
-          username: user.username,
-          role: user.role,
-          accessToken,
+          message: "User registered successfully",
+          userdata: {
+            uid: user.uid,
+            username: user.username,
+            role: user.role,
+            accessToken,
+          },
         };
       } catch (error) {
         console.error("Error during registration:", error);

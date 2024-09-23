@@ -9,7 +9,7 @@ import cookieParser from "cookie-parser";
 import corn from "node-cron";
 import { swaggerUi, swaggerDocs } from "./common/config/swaggerOptions.js";
 import db from "./common/config/database.js";
-import { createHandler } from "graphql-http";
+import { createHandler } from "graphql-http/lib/use/express";
 
 /* IMPORT ROUTES */
 import errorHandling from "./common/middleware/errorMiddleware.js";
@@ -20,8 +20,8 @@ import "./common/models/index.js";
 import { connectRedis } from "./common/config/redisClient.js";
 
 /* GraphQL */
-import schema from "./graphQl/schema.js";
-import resolvers from "./graphQL/resolvers/index.js"; 
+import schema from "./graphQL/schema.js";
+import resolvers from "./graphQL/resolvers/index.js";
 
 dotenv.config();
 const app = express();
@@ -94,6 +94,10 @@ const startServer = async () => {
       console.log(
         "apiDocumentation link - ",
         "http://localhost:" + server.address().port + "/api-docs"
+      );
+      console.log(
+        "graphQL link - ",
+        "http://localhost:" + server.address().port + "/graphql"
       );
     });
   } catch (err) {

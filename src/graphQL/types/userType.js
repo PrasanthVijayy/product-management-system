@@ -1,20 +1,17 @@
+// src/graphql/types/userType.js
 import { gql } from "apollo-server-express";
 
-const typeDefs = gql`
+const userTypeDefs = gql`
+  # Define the User type
   type User {
-    uid: String!
+    uid: ID!
     username: String!
     email: String!
     role: String!
+    access_token: String
   }
 
-  type AuthResponse {
-    uid: String!
-    username: String!
-    role: String!
-    accessToken: String!
-  }
-
+  # Input type for registering a new user
   input RegisterInput {
     username: String!
     email: String!
@@ -22,20 +19,22 @@ const typeDefs = gql`
     role: String!
   }
 
+  # Input type for login
   input LoginInput {
     email: String!
     password: String!
   }
 
+  # Query type for logging in users
   type Query {
-    # Example Query: Fetch user by UID (add if needed)
-    getUser(uid: String!): User
+    login(input: LoginInput!): User!
   }
 
+  # Mutation type for registering a new user and logging in a user
   type Mutation {
-    register(input: RegisterInput!): AuthResponse!
-    login(input: LoginInput!): AuthResponse!
+    register(input: RegisterInput!): User!
+    login(input: LoginInput!): User! # Correctly placed here
   }
 `;
 
-export default typeDefs;
+export default userTypeDefs;
