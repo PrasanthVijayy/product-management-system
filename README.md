@@ -2,7 +2,9 @@
 
 ## Overview
 
-The Product Management System (PMS) is a REST API designed for managing products and product categories. It supports CRUD operations, filtering, sorting, and integrates with a MySQL database. The application is scalable, secure, and optimized for performance.
+The Product Management System (PMS) is a robust application designed to manage products and product categories through both REST and GraphQL APIs. It features comprehensive support for CRUD operations, advanced filtering, and sorting capabilities. Leveraging Sequelize as an ORM for MySQL, the application ensures efficient database interactions.
+
+To enhance performance and scalability, the system incorporates Redis for caching, which significantly improves data retrieval times and reduces load on the database. The application is designed with scalability and security in mind, making it suitable for high-demand environments.
 
 ## Table of Contents
 
