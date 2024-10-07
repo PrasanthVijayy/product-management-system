@@ -1,5 +1,5 @@
 # Use the official Node.js image from the Docker Hub
-FROM node:20.18
+FROM node:22.8.0-bookworm-slim
 
 # Set the working directory
 WORKDIR /usr/src/index
