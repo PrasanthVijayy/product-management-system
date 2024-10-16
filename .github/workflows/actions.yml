@@ -1,0 +1,50 @@
+name: Node.js CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Generate test report (JUnit format)
+        run: npm test -- --reporters=jest-junit
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: jest-test-results
+          path: ./jest-test-results.xml
+
+      - name: Generate coverage report
+        run: npm run test:coverage
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: ./coverage
