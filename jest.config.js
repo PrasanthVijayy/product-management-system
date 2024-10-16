@@ -12,6 +12,7 @@ module.exports = {
   verbose: true,
   reporters: [
     "default",
+    "jest-summary-reporter",
     [
       "jest-html-reporter",
       {
