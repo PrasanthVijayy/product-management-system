@@ -52,9 +52,6 @@ jobs:
             sleep 1
           done
 
-      - name: Run migrations (if needed)
-        run: npm run migrate # Modify if you have migration or setup script
-
       - name: Run tests
         env:
           DB_NAME: ${{ secrets.DB_NAME }}
