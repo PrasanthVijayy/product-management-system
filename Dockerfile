@@ -1,5 +1,5 @@
 # Use the official Node.js image from the Docker Hub
-FROM node:22.18.0-alpine3.22
+FROM node:22.20.0-alpine3.22
 
 # Set the working directory
 WORKDIR /usr/src/index
